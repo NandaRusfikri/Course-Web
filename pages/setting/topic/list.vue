@@ -1,43 +1,173 @@
 <template>
   <div>
-    <v-dialog max-width="450px" v-model="dialog_kerjakan">
+    <v-dialog max-width="450px" v-model="dialog_add">
       <v-card class="rounded-lg">
         <v-toolbar color="secondary" dark flat dense>
-          <v-toolbar-title dark
-            ><b>Start {{ assessmentType }} </b></v-toolbar-title
-          >
+          <v-toolbar-title dark><b>Add Topic </b></v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-btn icon @click="dialog_kerjakan = false">
+          <v-btn icon @click="dialog_add = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-toolbar>
+        <br />
+        <v-card-text>
+          <div v-if="!topic.photo">
+            <div
+              :class="['dropZone', dragging ? 'dropZone-over' : '']"
+              @dragenter="dragging = true"
+              @dragleave="dragging = false"
+            >
+              <div class="dropZone-info" @drag="onChange">
+                <span class="fa fa-cloud-upload dropZone-title"></span>
+                <div class="dropZone-title">Drop and Drop to upload file</div>
 
-        <v-alert
-          border="left"
-          outlined
-          colored-border
-          type="warning"
-          elevation="2"
-        >
-          Apakah kamu yakin ingin mengerjakan <br />
-          Topic : <b>{{ topic.name }}</b> <br />Duration: <b>(60 menit)</b>
-          <br />
-          kamu tidak diperkenankan meninggalkan halaman ini selama waktu
-          pengerjaan
-        </v-alert>
+                <div class="dropZone-title">or</div>
+                <v-btn small color="btnprimary" outlined>Choose File</v-btn>
+                <!-- <div class="dropZone-upload-limit-info">
+                  <div>extension support: txt</div>
+                  <div>maximum file size: 5 MB</div>
+                </div> -->
+                <div class="dropZone-title">
+                  Recomended resolution Image 2:3
+                </div>
+              </div>
+              <input
+                type="file"
+                accept="image/png, image/jpeg"
+                @change="onChange"
+              />
+            </div>
+          </div>
+          <div v-else class="dropZone-uploaded">
+            <div class="dropZone-uploaded-info">
+              <span class="dropZone-title"
+                >Filename : {{ topic.photo.name }}</span
+              >
+              <span class="dropZone-title">Size : {{ topic.photo.size }}</span>
 
+              <v-btn
+                type="button"
+                class=""
+                small
+                color="error"
+                outlined
+                @click="removeFile"
+              >
+                Remove File
+              </v-btn>
+            </div>
+          </div>
+        </v-card-text>
+        <v-card-text>
+          <v-row>
+            <v-col class="leadform" cols="12" md="12" sm="6">
+              <v-autocomplete
+                label="Type"
+                :items="ListType"
+                item-value="id"
+                item-text="name"
+                v-model="topic.type_id"
+                dense
+                outlined
+                flat
+              ></v-autocomplete>
+            </v-col>
+            <v-col class="leadform" cols="12" md="12" sm="6">
+              <v-autocomplete
+                label="Level"
+                :items="ListLevel"
+                item-value="id"
+                item-text="name"
+                v-model="topic.level_id"
+                dense
+                outlined
+                flat
+              ></v-autocomplete>
+            </v-col>
+            <v-col class="leadform" cols="12" md="12" sm="6">
+              <v-autocomplete
+                label="Category"
+                :items="ListCategory"
+                item-value="id"
+                item-text="name"
+                v-model="topic.category_id"
+                dense
+                outlined
+                flat
+              ></v-autocomplete>
+            </v-col>
+
+            <v-col class="leadform" cols="12" md="12" sm="6">
+              <v-autocomplete
+                label="Is Any Pre Test"
+                :items="PreTest"
+                item-value="name"
+                item-text="name"
+                v-model="topic.pretest"
+                dense
+                outlined
+                flat
+              ></v-autocomplete>
+            </v-col>
+
+            <v-col class="leadform" cols="12" md="12" sm="6">
+              <v-text-field
+                label="Name"
+                v-model="topic.name"
+                dense
+                hint="Name Topic"
+                persistent-hint
+                outlined
+                flat
+              ></v-text-field>
+            </v-col>
+
+            <v-col class="leadform" cols="12" md="12" sm="6">
+              <v-text-field
+                label="Code"
+                v-model="topic.code"
+                dense
+                hint="Code Topic"
+                persistent-hint
+                outlined
+                flat
+              ></v-text-field>
+            </v-col>
+            <v-col class="leadform" cols="12" md="12" sm="6">
+              <v-text-field
+                label="Description"
+                v-model="topic.description"
+                dense
+                hint="Description Topic"
+                persistent-hint
+                outlined
+                flat
+              ></v-text-field>
+            </v-col>
+          </v-row>
+        </v-card-text>
         <v-card-actions>
           <v-spacer />
           <v-btn
             dense
             small
             outlined
-            @click="dialog_kerjakan = false"
+            @click="dialog_add = false"
             color="primary"
           >
             Cancel
           </v-btn>
-          <v-btn @click="FuncStartAssessment()" dense small color="primary"> Start </v-btn>
+          <v-btn
+            :disabled="
+              topic.name == '' || topic.code == '' || topic.description == ''
+            "
+            dense
+            small
+            @click="FuncAddTopic()"
+            color="primary"
+          >
+            Save
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -244,16 +374,52 @@
         <b>Topic</b></v-toolbar-title
       >
       <v-spacer />
+      <v-select
+        style="max-width: 150px"
+        class="shrink mx-4"
+        hide-details
+        solo
+        single-line
+        label="Is Active ?"
+        :items="Active"
+        item-value="name"
+        item-text="name"
+        v-model="DefaultIsActive"
+        dense
+        @change="GetListTopic()"
+        outlined
+        flat
+      ></v-select>
+      <v-btn
+        color="primary"
+        @click="
+          (dialog_add = true),
+            (topic.id = null),
+            (topic.name = null),
+            (topic.code = null),
+            (topic.description = null),
+            (topic.is_active = null),
+            (topic.photo_path = null),
+            (topic.type_id = null),
+            (topic.category_id = null),
+            (topic.level_id = null),
+            (topic.pretest = null)
+        "
+        class="white--text"
+      >
+        <v-icon dark> mdi-plus </v-icon>
+        <template v-if="!this.$vuetify.breakpoint.mobile">New Topic</template>
+      </v-btn>
     </v-toolbar>
 
     <v-row v-if="renderComponent" justify="center" align="center">
       <template v-for="item in ListTopic">
-        <v-col cols="12" sm="4" md="3" :key="item.id">
+        <v-col cols="12" sm="3" md="3" :key="item.id">
           <v-card hover class="rounded-lg mx-auto" max-width="344">
             <v-img
               gradient="to top right, rgba(90,90,90,0.30), rgba(90,90,90,0.4)"
               class="white--text align-top"
-              height="150px"
+              height="200px"
               :src="item.photo_path"
             >
               <v-chip
@@ -295,108 +461,33 @@
                 </p>
               </v-card-text>
             </v-img>
-            <v-card-actions>
-              <v-btn
-                v-if="item.user_assessment.length > 0"
-                color="primary "
-                text
-              >
-                Selesaikan
-              </v-btn>
-              <v-btn
-                v-if="item.user_assessment.length == 0"
-                color="secodary "
-                text
-              >
-                Kerjakan
-              </v-btn>
-
-              <v-spacer></v-spacer>
-
-              <v-btn icon @click="show = !show">
-                <v-icon>{{
-                  show ? "mdi-chevron-up" : "mdi-chevron-down"
-                }}</v-icon>
-              </v-btn>
-            </v-card-actions>
-
-            <v-expand-transition>
-              <div v-show="show">
-                <v-divider></v-divider>
-
-                <v-card-text>
-                  Untuk menyelesaikan Topic <b> {{ item.name }}</b> ada beberapa
-                  tahapan yang harus diselesaikan secara berurutan.
-                </v-card-text>
-                <v-list subheader>
-                  <v-list-item v-if="item.is_any_pre_test == 'YES'">
-                    <v-list-item-content>
-                      <v-list-item-title><b> Pre Test</b></v-list-item-title>
-                    </v-list-item-content>
-
-                    <v-list-item-icon>
-                      <v-btn
-                        @click="
-                          (dialog_kerjakan = true),
-                            (topic.name = item.name),
-                            (assessmentType = 'PreTest')
-                        "
-                        color="teal"
-                        class="caption text-capitalize"
-                        small
-                        text
-                      >
-                        done
-                      </v-btn>
-                    </v-list-item-icon>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title><b> Post Test</b></v-list-item-title>
-                    </v-list-item-content>
-
-                    <v-list-item-action-text>
-                      <v-btn
-                        @click="
-                          (dialog_kerjakan = true),
-                            (topic.name = item.name),
-                             (topic.id = item.id),
-                            (assessmentType = 'PostTest')
-                        "
-                        class="caption text-capitalize"
-                        color="primary"
-                        small
-                        outlined
-                      >
-                        Start
-                      </v-btn>
-                    </v-list-item-action-text>
-                  </v-list-item>
-
-                  <!-- <v-list-item v-for="chat in recent" :key="chat.title">
-
-
-                    <v-list-item-content>
-                      <v-list-item-title
-                        v-text="chat.title"
-                      ></v-list-item-title>
-                    </v-list-item-content>
-
-                    <v-list-item-icon>
-                      <v-icon
-                        :color="chat.active ? 'deep-purple accent-4' : 'grey'"
-                      >
-                        mdi-message-outline
-                      </v-icon>
-                    </v-list-item-icon>
-                  </v-list-item> -->
-                </v-list>
-              </div>
-            </v-expand-transition>
-
-            <!-- <v-btn
+            <v-btn
+              style="z-index: 3"
+              small
+              color="secondary"
+              dark
+              right
+              absolute
+              bottom
               @click="
-                $router.push({ path: '/course/topic', query: { id: item.id } })
+                (dialog_detail = true),
+                  (topic.id = item.id),
+                  (topic.name = item.name),
+                  (topic.code = item.code),
+                  (topic.description = item.description),
+                  (topic.is_active = item.is_active),
+                  (topic.photo_path = item.photo_path),
+                  (topic.type_id = item.topic_type_id),
+                  (topic.category_id = item.topic_category_id),
+                  (topic.level_id = item.topic_level_id),
+                  (topic.pretest = item.is_any_pre_test)
+              "
+            >
+              <v-icon>mdi-pencil</v-icon>
+            </v-btn>
+            <v-btn
+              @click="
+                $router.push({ path: '/setting/topic/detail', query: { id: item.id } })
               "
               style="z-index: 3"
               small
@@ -407,7 +498,7 @@
               bottom
             >
               <v-icon>mdi-format-list-bulleted</v-icon>
-            </v-btn> -->
+            </v-btn>
           </v-card>
         </v-col>
       </template>
@@ -425,16 +516,13 @@ export default {
   },
   data() {
     return {
-      assessmentType: "",
-      DataUser: [],
-      show: false,
       renderComponent: true,
       DetailCourse: null,
       loading: false,
       dragging: false,
       ListTopic: [],
       show: false,
-      dialog_kerjakan: false,
+      dialog_add: false,
       dialog_detail: false,
       topic: {
         id: null,
@@ -457,13 +545,12 @@ export default {
       DefaultIsActive: "Active",
     };
   },
-  created() {
-    this.DataUser = this.$cookies.get("user");
-  },
 
   async mounted() {
     // await this.GetListTopic();
-
+    this.GetListLevel();
+    this.GetListType();
+    this.GetListCategory();
     this.GetDetailCourse();
   },
   methods: {
@@ -533,10 +620,7 @@ export default {
     },
     async GetDetailCourse() {
       await this.$req
-        .post("api/v1/course/by_user", {
-          course_id: Number(this.$route.query.id),
-          user_id: 2,
-        })
+        .post("api/v1/course/" + this.$route.query.id)
         .then((response) => {
           this.DetailCourse = response.data.item;
           this.ListTopic = response.data.item.topic;
@@ -554,17 +638,89 @@ export default {
           this.$store.commit("SET_SNACKBAR", snackbar);
         });
     },
-
-    async FuncStartAssessment() {
-      this.loading = true;
+    async GetListCategory() {
       await this.$req
-        .post("api/v1/assessment/start", {
-          user_id: this.DataUser.user.id,
-          topic_id: this.topic.id,
-          assessment_type: this.assessmentType,
-        })
+        .get("api/v1/topic/category")
         .then((response) => {
+          this.ListCategory = response.data.items;
+        })
+        .catch((error) => {
+          this.loading = false;
+          let snackbar = {
+            color: "error",
+            message: error.response.data.message,
+            enabled: true,
+          };
 
+          this.$store.commit("SET_SNACKBAR", snackbar);
+        });
+    },
+    async GetListLevel() {
+      await this.$req
+        .get("api/v1/topic/level")
+        .then((response) => {
+          this.ListLevel = response.data.items;
+        })
+        .catch((error) => {
+          this.loading = false;
+          let snackbar = {
+            color: "error",
+            message: error.response.data.message,
+            enabled: true,
+          };
+
+          this.$store.commit("SET_SNACKBAR", snackbar);
+        });
+    },
+    async GetListType() {
+      await this.$req
+        .get("api/v1/topic/type")
+        .then((response) => {
+          this.ListType = response.data.items;
+        })
+        .catch((error) => {
+          this.loading = false;
+          let snackbar = {
+            color: "error",
+            message: error.response.data.message,
+            enabled: true,
+          };
+
+          this.$store.commit("SET_SNACKBAR", snackbar);
+        });
+    },
+    async FuncAddTopic() {
+      this.loading = true;
+      let formData = new FormData();
+
+      formData.append("code", this.topic.code);
+      formData.append("name", this.topic.name);
+      formData.append("description", this.topic.description);
+      formData.append("topic_type_id", this.topic.type_id);
+      formData.append("topic_category_id", this.topic.category_id);
+      formData.append("topic_level_id", this.topic.level_id);
+      formData.append("photo", this.topic.photo);
+      formData.append("is_any_pre_test", this.topic.pretest);
+      formData.append("course_id", this.$route.query.id);
+      formData.append("is_active", this.Active[0].name);
+
+      await this.$req
+        .post("api/v1/topic", formData)
+        .then((response) => {
+          var topic = {
+            id: null,
+            photo: null,
+            name: null,
+            code: null,
+            description: null,
+            type_id: 1,
+            category_id: 1,
+            level_id: 1,
+            pretest: "NO",
+            is_active: null,
+            photo_path: null,
+          };
+          this.topic = topic;
           this.ReloadComponent();
           let snackbar = {
             color: "success",
@@ -573,9 +729,8 @@ export default {
           };
 
           this.$store.commit("SET_SNACKBAR", snackbar);
-          this.dialog_kerjakan = false;
+          this.dialog_add = false;
           this.loading = false;
-           this.$router.push({ path: '/assessment', query: { id: response.data.item.id } });
         })
         .catch((error) => {
           this.loading = false;

@@ -166,8 +166,8 @@ export default {
         },
         {
           icon: "mdi-chart-bubble",
-          title: "Inspire",
-          to: "/",
+          title: "Setting",
+          to: "/setting/course",
         },
       ],
       miniVariant: false,

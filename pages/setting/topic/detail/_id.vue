@@ -211,15 +211,16 @@
               ></v-text-field>
             </v-col>
             <v-col class="leadform" cols="12" md="6" sm="6">
-              <v-text-field
+              <v-select
                 label="Option Label"
                 v-model="option.option_label"
                 dense
+                :items="['A','B','C','D']"
                 hint="e.g C"
                 persistent-hint
                 outlined
                 flat
-              ></v-text-field>
+              ></v-select>
             </v-col>
 
             <v-col class="leadform" cols="12" md="6" sm="6">
@@ -292,15 +293,16 @@
               ></v-text-field>
             </v-col>
             <v-col class="leadform" cols="12" md="6" sm="6">
-              <v-text-field
+              <v-select
                 label="Option Label"
                 v-model="option.option_label"
                 dense
+                 :items="['A','B','C','D']"
                 hint="e.g C"
                 persistent-hint
                 outlined
                 flat
-              ></v-text-field>
+              ></v-select>
             </v-col>
 
             <v-col class="leadform" cols="12" md="6" sm="6">
@@ -582,7 +584,7 @@ export default {
         question_text: "",
         duration: 0,
         score: 0,
-        level: 1,
+        level: 0,
         topic_id: null,
       },
       option: {

@@ -121,35 +121,135 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-    <v-row v-if="AssessmentList" align="center" justify="center">
-      <v-alert
-        class="mt-3 rounded-lg"
-        max-width="500px"
-        align="center"
-        justify="center"
-        prominent
-        outlined
-        type="error"
-      >
-        <v-row align="center">
-          <v-col class="grow"> Ada Assessment Yang Berlangsung !!! </v-col>
-          <v-col class="shrink">
-            <v-btn
-              color="error"
-              @click="
-                $router.push({
-                  path: '/assessment',
-                  query: { id: AssessmentList[0].id },
-                })
-              "
-              >Selesaikan</v-btn
+    <v-dialog max-width="450px" v-model="dialog_detail">
+      <v-card class="rounded-lg">
+        <v-toolbar color="secondary" dark flat dense>
+          <v-toolbar-title dark><b>Info Course </b></v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="dialog_detail = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-toolbar>
+        <v-card-text>
+          <v-img :src="course.photo_path" contain height="150px" />
+        </v-card-text>
+        <v-card-text>
+          <div v-if="!course.photo">
+            <div
+              :class="['dropZone', dragging ? 'dropZone-over' : '']"
+              @dragenter="dragging = true"
+              @dragleave="dragging = false"
             >
-          </v-col>
-        </v-row>
-      </v-alert>
-    </v-row>
+              <div class="dropZone-info" @drag="onChange">
+                <span class="fa fa-cloud-upload dropZone-title"></span>
+                <div class="dropZone-title">Drop and Drop to upload file</div>
+
+                <div class="dropZone-title">or</div>
+                <v-btn small color="btnprimary" outlined>Choose File</v-btn>
+                <!-- <div class="dropZone-upload-limit-info">
+                  <div>extension support: txt</div>
+                  <div>maximum file size: 5 MB</div>
+                </div> -->
+                <div class="dropZone-title">
+                  Recomended resolution Image 2:4
+                </div>
+              </div>
+              <input
+                type="file"
+                accept="image/png, image/jpeg"
+                @change="onChange"
+              />
+            </div>
+          </div>
+          <div v-else class="dropZone-uploaded">
+            <div class="dropZone-uploaded-info">
+              <span class="dropZone-title"
+                >Filename : {{ course.photo.name }}</span
+              >
+              <span class="dropZone-title">Size : {{ course.photo.size }}</span>
+
+              <v-btn
+                type="button"
+                class=""
+                small
+                color="error"
+                outlined
+                @click="removeFile"
+              >
+                Remove File
+              </v-btn>
+            </div>
+          </div>
+        </v-card-text>
+        <v-card-text>
+          <v-row>
+            <v-col class="leadform" cols="12" md="12" sm="6">
+              <v-text-field
+                label="Name"
+                v-model="course.name"
+                dense
+                hint="e.g : Cyber Security Awareness"
+                persistent-hint
+                outlined
+                flat
+              ></v-text-field>
+            </v-col>
+
+            <v-col class="leadform" cols="12" md="12" sm="6">
+              <v-text-field
+                label="Code"
+                v-model="course.code"
+                dense
+                hint="e.g : VIII"
+                persistent-hint
+                outlined
+                flat
+              ></v-text-field>
+            </v-col>
+            <v-col class="leadform" cols="12" md="12" sm="6">
+              <v-text-field
+                label="Description"
+                v-model="course.description"
+                dense
+                hint="Description Course"
+                persistent-hint
+                outlined
+                flat
+              ></v-text-field>
+            </v-col>
+            <v-col class="leadform" cols="12" md="12" sm="6">
+              <v-autocomplete
+                label="Is Active ?"
+                :items="Active"
+                item-value="name"
+                item-text="name"
+                v-model="course.is_active"
+                dense
+                outlined
+                flat
+              ></v-autocomplete>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            dense
+            small
+            outlined
+            @click="dialog_detail = false"
+            color="primary"
+          >
+            Cancel
+          </v-btn>
+          <v-btn @click="FuncUpdateCourse()" dense small color="primary">
+            Update
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-toolbar flat class="mx-4">
+
       <v-spacer />
       <v-select
         style="max-width: 150px"
@@ -167,6 +267,22 @@
         outlined
         flat
       ></v-select>
+
+      <v-btn
+        color="primary"
+        @click="
+          (dialog_add = true),
+            (course.name = null),
+            (course.description = null),
+            (course.code = null),
+            (course.photo = null),
+            (course.is_active = null)
+        "
+        class="white--text"
+      >
+        <v-icon left dark> mdi-plus </v-icon>
+        Course
+      </v-btn>
     </v-toolbar>
 
     <v-row v-if="renderComponent" justify="center" align="center">
@@ -196,6 +312,7 @@
               </v-card-text>
             </v-img>
             <v-btn
+
               style="z-index: 3"
               small
               color="primary"
@@ -203,9 +320,30 @@
               right
               absolute
               top
-              @click="$router.push({ path: '/course', query: { id: item.id } })"
+              @click="$router.push({ path: '/setting/topic/list', query: { id: item.id } })"
             >
               <v-icon>mdi-eye</v-icon>
+            </v-btn>
+
+            <v-btn
+              style="z-index: 3"
+              small
+              color="secondary"
+              dark
+              right
+              absolute
+              bottom
+              @click="
+                (dialog_detail = true),
+                  (course.id = item.id),
+                  (course.name = item.name),
+                  (course.code = item.code),
+                  (course.description = item.description),
+                  (course.is_active = item.is_active),
+                  (course.photo_path = item.photo_path)
+              "
+            >
+              <v-icon>mdi-pencil</v-icon>
             </v-btn>
           </v-card>
         </v-col>
@@ -224,7 +362,6 @@ export default {
   layout: "home",
   data() {
     return {
-      AssessmentList: null,
       Active: [{ name: "Active" }, { name: "No Active" }],
       DefaultIsActive: "Active",
       DataUser: null,
@@ -250,12 +387,7 @@ export default {
 
   mounted() {
     this.GetListCourse();
-    this.FuncListAssessmentProgress();
   },
-  created() {
-    this.DataUser = this.$cookies.get("user");
-  },
-
   methods: {
     onChange(e) {
       var files = e.target.files || e.dataTransfer.files;
@@ -363,14 +495,40 @@ export default {
           this.$store.commit("SET_SNACKBAR", snackbar);
         });
     },
-    async FuncListAssessmentProgress() {
+    async FuncUpdateCourse() {
+      this.loading = true;
+      let formData = new FormData();
+
+      formData.append("code", this.course.code);
+      formData.append("name", this.course.name);
+      formData.append("is_active", this.course.is_active);
+      formData.append("description", this.course.description);
+
+      if (this.course.photo) {
+        formData.append("photo", this.course.photo);
+      }
+
       await this.$req
-        .post("api/v1/assessment/list", {
-          user_id: this.DataUser.user.id,
-          status: "PROGRESS",
-        })
+        .put("api/v1/course/" + this.course.id, formData)
         .then((response) => {
-          this.AssessmentList = response.data.items;
+          var course = {
+            name: null,
+            description: null,
+            code: null,
+            photo: null,
+            is_active: null,
+          };
+          this.course = course;
+          this.ReloadComponent();
+          let snackbar = {
+            color: "success",
+            message: response.data.message,
+            enabled: true,
+          };
+
+          this.$store.commit("SET_SNACKBAR", snackbar);
+          this.dialog_detail = false;
+          this.loading = false;
         })
         .catch((error) => {
           this.loading = false;

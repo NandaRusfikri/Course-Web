@@ -350,22 +350,7 @@
       </v-card>
     </v-dialog>
 
-    <v-card v-if="DetailCourse != null" class="mx-auto" max-width="900">
-      <v-img
-        gradient="to top right, rgba(90,90,90,0.30), rgba(90,90,90,0.4)"
-        class="white--text align-end"
-        max-height="200px"
-        :src="DetailCourse.photo_path"
-      >
-        <p class="py-0 px-3 my-0 display-1 font-weight-bold">
-          {{ DetailCourse.code }}
-        </p>
-        <p class="py-0 px-3 my-0 title font-weight-light">
-          <b>{{ DetailCourse.name }}</b>
-        </p>
-      </v-img>
-    </v-card>
-    <v-toolbar flat class="mx-4">
+    <!-- <v-toolbar flat class="mx-4">
       <v-toolbar-title
         v-if="!this.$vuetify.breakpoint.mobile"
         style="font-family: Comfortaa, sans-serif"
@@ -410,99 +395,127 @@
         <v-icon dark> mdi-plus </v-icon>
         <template v-if="!this.$vuetify.breakpoint.mobile">New Topic</template>
       </v-btn>
-    </v-toolbar>
+    </v-toolbar> -->
+    <v-row justify="center" align="center">
+      <v-col cols="12" md="10" lg="10" xl="8">
+        <v-card outlined v-if="DetailCourse != null" class="mx-auto rounded-lg">
+          <v-img
+            gradient="to top right, rgba(90,90,90,0), rgba(90,90,90,0)"
+            class="white--text align-end"
+            :aspect-ratio="100 / 25"
+            :src="DetailCourse.photo_path"
+          >
+            <p class="font-weight-medium py-0 px-3 my-0 display-1">
+              {{ DetailCourse.name }}
+            </p>
+            <p class="font-weight-medium py-0 px-3 my-0 title">
+              <b>{{ DetailCourse.code }}</b>
+            </p>
+          </v-img>
+        </v-card>
+        <br />
 
-    <v-row v-if="renderComponent" justify="center" align="center">
-      <template v-for="item in ListTopic">
-        <v-col cols="12" sm="3" md="3" :key="item.id">
-          <v-card hover class="rounded-lg mx-auto" max-width="344">
-            <v-img
-              gradient="to top right, rgba(90,90,90,0.30), rgba(90,90,90,0.4)"
-              class="white--text align-top"
-              height="200px"
-              :src="item.photo_path"
-            >
-              <v-chip
-                style="z-index: 4"
-                absolute
-                bottom
-                small
-                color="teal"
-                label
-                text-color="white"
-              >
-                {{ item.topic_category.name }}
-              </v-chip>
-
-              <v-chip small color="purple" label text-color="white">
-                {{ item.topic_level.name }}
-              </v-chip>
-              <v-chip small color="red" label text-color="white">
-                {{ item.topic_type.name }}
-              </v-chip>
-
-              <v-card-text
-                @click="
-                  $router.push({ path: '/course', query: { id: item.id } })
-                "
-              >
-                <p
-                  class="white--text text-capitalize title py-0 my-0"
-                  style="background-color: rgba(97, 97, 97, 0.5)"
-                >
-                  #{{ item.code }}
-                </p>
-
-                <p
-                  class="white--text text-capitalize subtitle-1 py-0 my-0"
-                  style="background-color: rgba(97, 97, 97, 0.5)"
-                >
-                  {{ item.name }}
-                </p>
+        <v-row>
+          <v-col cols="12" md="3">
+            <v-card flat outlined class="mx-auto" max-width="344">
+              <v-card-text>
+                <div>Word of the Day</div>
+                <p class="text-h4 text--primary">be•nev•o•lent</p>
+                <p>adjective</p>
+                <div class="text--primary">
+                  well meaning and kindly.<br />
+                  "a benevolent smile"
+                </div>
               </v-card-text>
-            </v-img>
-            <v-btn
-              style="z-index: 3"
-              small
-              color="secondary"
-              dark
-              right
-              absolute
-              bottom
-              @click="
-                (dialog_detail = true),
-                  (topic.id = item.id),
-                  (topic.name = item.name),
-                  (topic.code = item.code),
-                  (topic.description = item.description),
-                  (topic.is_active = item.is_active),
-                  (topic.photo_path = item.photo_path),
-                  (topic.type_id = item.topic_type_id),
-                  (topic.category_id = item.topic_category_id),
-                  (topic.level_id = item.topic_level_id),
-                  (topic.pretest = item.is_any_pre_test)
-              "
-            >
-              <v-icon>mdi-pencil</v-icon>
-            </v-btn>
-            <v-btn
-              @click="
-                $router.push({ path: '/setting/topic/detail', query: { id: item.id } })
-              "
-              style="z-index: 3"
-              small
-              color="primary"
-              dark
-              left
-              absolute
-              bottom
-            >
-              <v-icon>mdi-format-list-bulleted</v-icon>
-            </v-btn>
-          </v-card>
-        </v-col>
-      </template>
-    </v-row>
+              <v-card-actions>
+                <v-btn text color="deep-purple accent-4"> Learn More </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-col>
+          <v-col v-if="renderComponent" cols="12" md="9">
+            <template v-for="item in ListTopic">
+              <v-card class="mb-5 rounded-lg" outlined :key="item.id">
+                <v-chip
+                  style="z-index: 4"
+                  absolute
+                  bottom
+                  small
+                  color="teal"
+                  label
+                  text-color="white"
+                >
+                  {{ item.topic_category.name }}
+                </v-chip>
+                <v-chip small color="purple" label text-color="white">
+                  {{ item.topic_level.name }}
+                </v-chip>
+                <v-chip small color="red" label text-color="white">
+                  {{ item.topic_type.name }}
+                </v-chip>
+
+                <v-list-item two-line>
+                  <v-list-item-avatar>
+                    <v-icon dark class="blue">mdi-clipboard-text</v-icon>
+                  </v-list-item-avatar>
+
+                  <v-list-item-content>
+                    <v-list-item-title> {{ item.name }}</v-list-item-title>
+                    <v-list-item-subtitle>
+                      {{ item.code }}</v-list-item-subtitle
+                    >
+                  </v-list-item-content>
+
+                  <v-list-item-action>
+                    <v-menu offset-y>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                          icon
+                          color="secondary"
+                          dark
+                          v-bind="attrs"
+                          v-on="on"
+                        >
+                          <v-icon> mdi-dots-vertical</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list>
+                        <v-list-item
+                          @click="
+                            (dialog_detail = true),
+                              (topic.id = item.id),
+                              (topic.name = item.name),
+                              (topic.code = item.code),
+                              (topic.description = item.description),
+                              (topic.is_active = item.is_active),
+                              (topic.photo_path = item.photo_path),
+                              (topic.type_id = item.topic_type_id),
+                              (topic.category_id = item.topic_category_id),
+                              (topic.level_id = item.topic_level_id),
+                              (topic.pretest = item.is_any_pre_test)
+                          "
+                        >
+                          <v-list-item-title>Edit</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item
+                          @click="
+                            $router.push({
+                              path: '/setting/topic/detail',
+                              query: { id: item.id },
+                            })
+                          "
+                        >
+                          <v-list-item-title>Lihat</v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </v-list-item-action>
+                </v-list-item>
+              </v-card>
+            </template>
+          </v-col>
+        </v-row>
+      </v-col></v-row
+    >
   </div>
 </template>
 <script>

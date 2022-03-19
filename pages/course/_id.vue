@@ -37,7 +37,9 @@
           >
             Cancel
           </v-btn>
-          <v-btn @click="FuncStartAssessment()" dense small color="primary"> Start </v-btn>
+          <v-btn @click="FuncStartAssessment()" dense small color="primary">
+            Start
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -220,197 +222,148 @@
       </v-card>
     </v-dialog>
 
-    <v-card v-if="DetailCourse != null" class="mx-auto" max-width="900">
-      <v-img
-        gradient="to top right, rgba(90,90,90,0.30), rgba(90,90,90,0.4)"
-        class="white--text align-end"
-        max-height="200px"
-        :src="DetailCourse.photo_path"
-      >
-        <p class="py-0 px-3 my-0 display-1 font-weight-bold">
-          {{ DetailCourse.code }}
-        </p>
-        <p class="py-0 px-3 my-0 title font-weight-light">
-          <b>{{ DetailCourse.name }}</b>
-        </p>
-      </v-img>
-    </v-card>
-    <v-toolbar flat class="mx-4">
-      <v-toolbar-title
-        v-if="!this.$vuetify.breakpoint.mobile"
-        style="font-family: Comfortaa, sans-serif"
-        class="text-capitalize"
-      >
-        <b>Topic</b></v-toolbar-title
-      >
-      <v-spacer />
-    </v-toolbar>
+    <v-row justify="center" align="center">
+      <v-col cols="12" md="10" lg="10" xl="8">
+        <v-card outlined v-if="DetailCourse != null" class="mx-auto rounded-lg">
+          <v-img
+            gradient="to top right, rgba(90,90,90,0), rgba(90,90,90,0)"
+            class="white--text align-end"
+            :aspect-ratio="100 / 25"
+            :src="DetailCourse.photo_path"
+          >
+            <p class="font-weight-medium py-0 px-3 my-0 display-1">
+              {{ DetailCourse.name }}
+            </p>
+            <p class="font-weight-medium py-0 px-3 my-0 title">
+              <b>{{ DetailCourse.code }}</b>
+            </p>
+          </v-img>
+        </v-card>
+        <br />
 
-    <v-row v-if="renderComponent" justify="center" align="center">
-      <template v-for="item in ListTopic">
-        <v-col cols="12" sm="4" md="3" :key="item.id">
-          <v-card hover class="rounded-lg mx-auto" max-width="344">
-            <v-img
-              gradient="to top right, rgba(90,90,90,0.30), rgba(90,90,90,0.4)"
-              class="white--text align-top"
-              height="150px"
-              :src="item.photo_path"
-            >
-              <v-chip
-                style="z-index: 4"
-                absolute
-                bottom
-                small
-                color="teal"
-                label
-                text-color="white"
-              >
-                {{ item.topic_category.name }}
-              </v-chip>
-
-              <v-chip small color="purple" label text-color="white">
-                {{ item.topic_level.name }}
-              </v-chip>
-              <v-chip small color="red" label text-color="white">
-                {{ item.topic_type.name }}
-              </v-chip>
-
-              <v-card-text
-                @click="
-                  $router.push({ path: '/course', query: { id: item.id } })
-                "
-              >
-                <p
-                  class="white--text text-capitalize title py-0 my-0"
-                  style="background-color: rgba(97, 97, 97, 0.5)"
-                >
-                  #{{ item.code }}
-                </p>
-
-                <p
-                  class="white--text text-capitalize subtitle-1 py-0 my-0"
-                  style="background-color: rgba(97, 97, 97, 0.5)"
-                >
-                  {{ item.name }}
-                </p>
+        <v-row>
+          <v-col cols="12" md="3">
+            <v-card flat outlined class="mx-auto" max-width="344">
+              <v-card-text>
+                <div>Word of the Day</div>
+                <p class="text-h4 text--primary">be•nev•o•lent</p>
+                <p>adjective</p>
+                <div class="text--primary">
+                  well meaning and kindly.<br />
+                  "a benevolent smile"
+                </div>
               </v-card-text>
-            </v-img>
-            <v-card-actions>
-              <v-btn
-                v-if="item.user_assessment.length > 0"
-                color="primary "
-                text
-              >
-                Selesaikan
-              </v-btn>
-              <v-btn
-                v-if="item.user_assessment.length == 0"
-                color="secodary "
-                text
-              >
-                Kerjakan
-              </v-btn>
+              <v-card-actions>
+                <v-btn text color="deep-purple accent-4"> Learn More </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-col>
+          <v-col v-if="renderComponent" cols="12" md="9">
+            <template v-for="item in ListTopic">
+              <v-card class="mb-5 rounded-lg" outlined :key="item.id">
+                <v-chip
+                  style="z-index: 4"
+                  absolute
+                  bottom
+                  small
+                  color="teal"
+                  label
+                  text-color="white"
+                >
+                  {{ item.topic_category.name }}
+                </v-chip>
+                <v-chip small color="purple" label text-color="white">
+                  {{ item.topic_level.name }}
+                </v-chip>
+                <v-chip small color="red" label text-color="white">
+                  {{ item.topic_type.name }}
+                </v-chip>
 
-              <v-spacer></v-spacer>
+                <v-list-item two-line>
+                  <v-list-item-avatar>
+                    <v-icon dark class="blue">mdi-clipboard-text</v-icon>
+                  </v-list-item-avatar>
 
-              <v-btn icon @click="show = !show">
-                <v-icon>{{
-                  show ? "mdi-chevron-up" : "mdi-chevron-down"
-                }}</v-icon>
-              </v-btn>
-            </v-card-actions>
+                  <v-list-item-content>
+                    <v-list-item-title> {{ item.name }}</v-list-item-title>
+                    <v-list-item-subtitle>
+                      {{ item.code }}</v-list-item-subtitle
+                    >
+                  </v-list-item-content>
 
-            <v-expand-transition>
-              <div v-show="show">
-                <v-divider></v-divider>
+                  <v-list-item-action>
+                    <v-btn icon @click="show = !show">
+                      <v-icon>{{
+                        show ? "mdi-chevron-up" : "mdi-chevron-down"
+                      }}</v-icon>
+                    </v-btn>
+                  </v-list-item-action>
+                </v-list-item>
 
-                <v-card-text>
-                  Untuk menyelesaikan Topic <b> {{ item.name }}</b> ada beberapa
-                  tahapan yang harus diselesaikan secara berurutan.
-                </v-card-text>
-                <v-list subheader>
-                  <v-list-item v-if="item.is_any_pre_test == 'YES'">
-                    <v-list-item-content>
-                      <v-list-item-title><b> Pre Test</b></v-list-item-title>
-                    </v-list-item-content>
+                <v-expand-transition>
+                  <div v-show="show">
+                    <v-divider></v-divider>
 
-                    <v-list-item-icon>
-                      <v-btn
-                        @click="
-                          (dialog_kerjakan = true),
-                            (topic.name = item.name),
-                            (assessmentType = 'PreTest')
-                        "
-                        color="teal"
-                        class="caption text-capitalize"
-                        small
-                        text
-                      >
-                        done
-                      </v-btn>
-                    </v-list-item-icon>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title><b> Post Test</b></v-list-item-title>
-                    </v-list-item-content>
+                    <v-card-text>
+                      Untuk menyelesaikan Topic <b> {{ item.name }}</b> ada
+                      beberapa tahapan yang harus diselesaikan secara berurutan.
+                    </v-card-text>
+                    <v-list subheader>
+                      <v-list-item v-if="item.is_any_pre_test == 'YES'">
+                        <v-list-item-content>
+                          <v-list-item-title
+                            ><b> Pre Test</b></v-list-item-title
+                          >
+                        </v-list-item-content>
 
-                    <v-list-item-action-text>
-                      <v-btn
-                        @click="
-                          (dialog_kerjakan = true),
-                            (topic.name = item.name),
-                             (topic.id = item.id),
-                            (assessmentType = 'PostTest')
-                        "
-                        class="caption text-capitalize"
-                        color="primary"
-                        small
-                        outlined
-                      >
-                        Start
-                      </v-btn>
-                    </v-list-item-action-text>
-                  </v-list-item>
+                        <v-list-item-icon>
+                          <v-btn
+                            @click="
+                              (dialog_kerjakan = true),
+                                (topic.name = item.name),
+                                (assessmentType = 'PreTest')
+                            "
+                            color="teal"
+                            class="caption text-capitalize"
+                            small
+                            text
+                          >
+                            done
+                          </v-btn>
+                        </v-list-item-icon>
+                      </v-list-item>
+                      <v-list-item>
+                        <v-list-item-content>
+                          <v-list-item-title
+                            ><b> Post Test</b></v-list-item-title
+                          >
+                        </v-list-item-content>
 
-                  <!-- <v-list-item v-for="chat in recent" :key="chat.title">
-
-
-                    <v-list-item-content>
-                      <v-list-item-title
-                        v-text="chat.title"
-                      ></v-list-item-title>
-                    </v-list-item-content>
-
-                    <v-list-item-icon>
-                      <v-icon
-                        :color="chat.active ? 'deep-purple accent-4' : 'grey'"
-                      >
-                        mdi-message-outline
-                      </v-icon>
-                    </v-list-item-icon>
-                  </v-list-item> -->
-                </v-list>
-              </div>
-            </v-expand-transition>
-
-            <!-- <v-btn
-              @click="
-                $router.push({ path: '/course/topic', query: { id: item.id } })
-              "
-              style="z-index: 3"
-              small
-              color="primary"
-              dark
-              left
-              absolute
-              bottom
-            >
-              <v-icon>mdi-format-list-bulleted</v-icon>
-            </v-btn> -->
-          </v-card>
-        </v-col>
-      </template>
+                        <v-list-item-action-text>
+                          <v-btn
+                            @click="
+                              (dialog_kerjakan = true),
+                                (topic.name = item.name),
+                                (topic.id = item.id),
+                                (assessmentType = 'PostTest')
+                            "
+                            class="caption text-capitalize"
+                            color="primary"
+                            small
+                            outlined
+                          >
+                            Start
+                          </v-btn>
+                        </v-list-item-action-text>
+                      </v-list-item>
+                    </v-list>
+                  </div>
+                </v-expand-transition>
+              </v-card>
+            </template>
+          </v-col>
+        </v-row>
+      </v-col>
     </v-row>
   </div>
 </template>
@@ -564,7 +517,6 @@ export default {
           assessment_type: this.assessmentType,
         })
         .then((response) => {
-
           this.ReloadComponent();
           let snackbar = {
             color: "success",
@@ -575,7 +527,10 @@ export default {
           this.$store.commit("SET_SNACKBAR", snackbar);
           this.dialog_kerjakan = false;
           this.loading = false;
-           this.$router.push({ path: '/assessment', query: { id: response.data.item.id } });
+          this.$router.push({
+            path: "/assessment",
+            query: { id: response.data.item.id },
+          });
         })
         .catch((error) => {
           this.loading = false;

@@ -249,7 +249,6 @@
       </v-card>
     </v-dialog>
     <v-toolbar flat class="mx-4">
-
       <v-spacer />
       <v-select
         style="max-width: 150px"
@@ -286,6 +285,122 @@
     </v-toolbar>
 
     <v-row v-if="renderComponent" justify="center" align="center">
+      <v-col cols="12" md="10">
+        <v-row v-if="renderComponent" justify="center" align="center">
+          <template v-for="item in ListCourse">
+            <v-col cols="12" sm="4" md="4" :key="item.id">
+              <v-card outlined hover class="rounded-lg mx-auto">
+                <v-card>
+                  <v-img
+                    class="align-center"
+                    :aspect-ratio="100 / 25"
+                    :src="item.photo_path"
+                    gradient="to top right, rgba(100,100,100,0), rgba(100,100,100,0)"
+                  >
+                    <v-card-text>
+                      <p
+                        class="font-weight-medium white--text text-capitalize title py-0 my-0"
+                      >
+                        {{ item.name }}
+                      </p>
+
+                      <p
+                        class="font-weight-medium white--text text-capitalize subtitle-1 py-0 my-0"
+                      >
+                        {{ item.code }}
+                      </p>
+                    </v-card-text>
+                  </v-img>
+                  <v-btn
+                    v-if="!$vuetify.breakpoint.mobile"
+                    icon
+                    fab
+                    bottom
+                    right
+                    absolute
+                  >
+                    <v-avatar size="75">
+                      <img
+                        src="https://cdn.vuetifyjs.com/images/john.jpg"
+                        alt="John"
+                      /> </v-avatar
+                  ></v-btn>
+                </v-card>
+
+                <v-card
+                  v-if="!$vuetify.breakpoint.mobile"
+                  min-height="80px"
+                  flat
+                ></v-card>
+                <v-divider />
+                <v-card-actions v-if="!$vuetify.breakpoint.mobile">
+                  <v-spacer />
+                  <v-icon
+                    @click="
+                      (dialog_detail = true),
+                        (course.id = item.id),
+                        (course.name = item.name),
+                        (course.code = item.code),
+                        (course.description = item.description),
+                        (course.is_active = item.is_active),
+                        (course.photo_path = item.photo_path)
+                    "
+                  >
+                    mdi-pencil
+                  </v-icon>
+                  <v-icon
+                    @click="
+                      $router.push({
+                        path: '/setting/topic/list',
+                        query: { id: item.id },
+                      })
+                    "
+                  >
+                    mdi-dots-vertical
+                  </v-icon>
+                </v-card-actions>
+                <v-btn
+                  v-if="$vuetify.breakpoint.mobile"
+                  style="z-index: 3"
+                  small
+                  icon
+                  dark
+                  right
+                  absolute
+                  top
+                  @click="
+                    $router.push({ path: '/course', query: { id: item.id } })
+                  "
+                >
+                  <v-icon>mdi-dots-vertical</v-icon>
+                </v-btn>
+                <v-btn
+                  v-if="$vuetify.breakpoint.mobile"
+                  style="z-index: 3"
+                  small
+                  icon
+                  dark
+                  left
+                  absolute
+                  top
+                  @click="
+                    $router.push({
+                      path: '/setting/topic/list',
+                      query: { id: item.id },
+                    })
+                  "
+                >
+                  <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+              </v-card>
+            </v-col>
+          </template>
+        </v-row>
+      </v-col>
+      <v-col cols="12" md="2"></v-col>
+    </v-row>
+
+    <!-- <v-row v-if="renderComponent" justify="center" align="center">
       <template v-for="item in ListCourse">
         <v-col cols="12" sm="3" md="3" :key="item.id">
           <v-card hover class="rounded-lg mx-auto" max-width="344">
@@ -348,7 +463,7 @@
           </v-card>
         </v-col>
       </template>
-    </v-row>
+    </v-row> -->
   </div>
 </template>
 <script>

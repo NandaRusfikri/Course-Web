@@ -59,45 +59,6 @@
     </v-toolbar>
 
     <v-row v-if="renderComponent">
-      <v-col cols="12" sm="12" md="4">
-        <v-card
-          flat
-          style="border: 1px solid red"
-          class="mx-auto rounded-lg"
-          max-width="300"
-        >
-          <v-list dense>
-            <v-list-item-group v-model="selectedItem" color="primary">
-              <template v-for="(item, i) in DataAssessment.generate_question">
-                <v-list-item
-                  dense
-                  :key="i"
-                  @click="(Question = item), (Question['no'] = i + 1)"
-                >
-                  <v-list-item-action> {{ i + 1 }}. </v-list-item-action>
-
-                  <v-list-item-content>
-                    <v-btn
-                      v-for="ops in item.question.question_option"
-                      :key="ops.id"
-                      small
-                      elevation="1"
-                      :color="
-                        ops.id == item.user_answer_option_id ? 'primary' : ''
-                      "
-                      >{{ ops.option_label }}</v-btn
-                    >
-                  </v-list-item-content>
-                </v-list-item>
-                <v-divider
-                  v-if="i < DataAssessment.generate_question.length - 1"
-                  :key="item.created_at + item.id"
-                ></v-divider>
-              </template>
-            </v-list-item-group>
-          </v-list>
-        </v-card>
-      </v-col>
       <v-col cols="12" sm="12" md="8">
         <v-card flat style="border: 1px solid red" class="rounded-lg">
           <v-card-actions v-if="DataAssessment.generate_question">
@@ -143,14 +104,14 @@
                       <v-radio :value="item_option.id"></v-radio>
                     </v-list-item-action>
                     <v-list-item-content class="px-0">
-                      <v-list-item-title class="text-wrap"
+                      <v-list-item-title class=""
                         ><b
                           :style="
                             item_option.id == Question.user_answer_option_id
                               ? 'color:red;'
                               : ''
                           "
-                          class="text-capitalize"
+                          class="text-capitalize text-wrap"
                           >{{ item_option.option_label }}</b
                         >. {{ item_option.option_text }}</v-list-item-title
                       >
@@ -160,6 +121,45 @@
               >
             </v-radio-group>
           </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col cols="12" sm="12" md="4">
+        <v-card
+          flat
+          style="border: 1px solid red"
+          class="mx-auto rounded-lg"
+          max-width="300"
+        >
+          <v-list dense>
+            <v-list-item-group v-model="selectedItem" color="primary">
+              <template v-for="(item, i) in DataAssessment.generate_question">
+                <v-list-item
+                  dense
+                  :key="i"
+                  @click="(Question = item), (Question['no'] = i + 1)"
+                >
+                  <v-list-item-action> {{ i + 1 }}. </v-list-item-action>
+
+                  <v-list-item-content>
+                    <v-btn
+                      v-for="ops in item.question.question_option"
+                      :key="ops.id"
+                      small
+                      elevation="1"
+                      :color="
+                        ops.id == item.user_answer_option_id ? 'primary' : ''
+                      "
+                      >{{ ops.option_label }}</v-btn
+                    >
+                  </v-list-item-content>
+                </v-list-item>
+                <v-divider
+                  v-if="i < DataAssessment.generate_question.length - 1"
+                  :key="item.created_at + item.id"
+                ></v-divider>
+              </template>
+            </v-list-item-group>
+          </v-list>
         </v-card>
       </v-col>
     </v-row>
@@ -217,10 +217,8 @@ export default {
 
       loading: false,
 
-
       dialog_submit: false,
       duration: 0,
-
 
       CountDown: {
         minutes: 0,
